@@ -1,53 +1,8 @@
 import { useState } from "react";
 
-const dataTask = [
-  {
-    id: crypto.randomUUID(),
-    title: "Изучение react",
-    priority: "High",
-    date: 1,
-    complete: false
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Изучение react2",
-    priority: "High",
-    date: 1,
-    complete: false
-  },
-    {
-    id: crypto.randomUUID(),
-    title: "Изучение react",
-    priority: "High",
-    date: 1,
-    complete: false
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Изучение react2",
-    priority: "High",
-    date: 1,
-    complete: false
-  },
-    {
-    id: crypto.randomUUID(),
-    title: "Изучение react",
-    priority: "High",
-    date: 1,
-    complete: true
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "Изучение react2",
-    priority: "High",
-    date: 1,
-    complete: false
-  },
-];
-
 function App() {
   const [openSection, setOpenSection] = useState({
-    openTaskForm: false,
+    openTaskForm: true,
     openTaskList: true,
     openCompletedTaskList: true,
   });
@@ -57,6 +12,14 @@ function App() {
       ...prev,
       [section]: !prev[section],
     }));
+  }
+  const [tasks, setTasks] = useState([]);
+
+  function addTask(task) {
+    setTasks([
+      ...tasks,
+      { ...task, completed: false, id: crypto.randomUUID() },
+    ]);
   }
 
   return (
@@ -72,7 +35,7 @@ function App() {
           >
             +
           </button>
-          {openSection.openTaskForm && <TaskForm />}
+          {openSection.openTaskForm && <TaskForm addTask={addTask} />}
         </div>
       </section>
       <section>
@@ -92,7 +55,7 @@ function App() {
                 <button className="sort-button">По дате</button>
                 <button className="sort-button">По приоритету</button>
               </div>
-              <TaskList />
+              <TaskList tasks={tasks} />
             </>
           )}
         </div>
@@ -108,7 +71,9 @@ function App() {
             +
           </button>
           <h2>Завершённые задачи</h2>
-          {openSection.openCompletedTaskList && <CompletedTaskList />}
+          {openSection.openCompletedTaskList && (
+            <CompletedTaskList tasks={tasks} />
+          )}
         </div>
       </section>
       <Footer />
@@ -116,47 +81,85 @@ function App() {
   );
 }
 
-function TaskForm() {
+function TaskForm({ addTask }) {
+  const [formElement, setFormElement] = useState({
+    title: "",
+    priority: "low",
+    deadline: "",
+  });
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    addTask({ ...formElement });
+    setFormElement({ title: "", priority: "low", deadline: "" });
+  }
+
   return (
-    <form action="" className="task-form">
-      <input type="text" value={""} placeholder="Название задачи" required />
-      <select value={""}>
-        <option value="High">High</option>
-        <option value="Medium">Medium</option>
-        <option value="Low">Low</option>
+    <form className="task-form" action="" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={formElement.title}
+        placeholder="Название задачи"
+        required
+        onChange={(e) =>
+          setFormElement({ ...formElement, title: e.target.value })
+        }
+      />
+      <select
+        value={formElement.priority}
+        onChange={(e) =>
+          setFormElement({ ...formElement, priority: e.target.value })
+        }
+      >
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
       </select>
-      <input type="datetime-local" value={""} required />
+      <input
+        type="datetime-local"
+        required
+        value={formElement.deadline}
+        onChange={(e) =>
+          setFormElement({ ...formElement, deadline: e.target.value })
+        }
+      />
       <button type="submit">Добавить задачу</button>
     </form>
   );
 }
 
-function TaskList() {
+function TaskList({ tasks }) {
   return (
     <ul className="task-list">
-      {dataTask.filter((task) => !task.complete).map((task) => (
-        <TaskItem key={task.id} obj={task} />
-      ))}
+      {tasks
+        .filter((task) => !task.complete)
+        .map((task) => (
+          <TaskItem key={task.id} taskObj={task} />
+        ))}
     </ul>
   );
 }
 
-function CompletedTaskList() {
+function CompletedTaskList({ tasks }) {
   return (
     <ul className="task-list">
-      {dataTask.filter((task) => task.complete).map((task) => (
-        <TaskItem key={task.id} obj={task} />
-      ))}
+      {tasks
+        .filter((task) => task.complete)
+        .map((task) => (
+          <TaskItem key={task.id} taskObj={task} />
+        ))}
     </ul>
   );
 }
 
-function TaskItem(props) {
+function TaskItem({ taskObj }) {
+  const {title, priority, deadline, id} = taskObj
+  
   return (
-    <li className="task-item">
+    <li className={`task-item ${priority}`}>
       <div className="task-info">
-        <h3>{props.obj.title}</h3>
-        <div className="task-deadline">{new Date().toLocaleString()}</div>
+        <h3>{title}<strong> {priority}</strong></h3>
+        <div className="task-deadline">Дедлайн: {new Date(deadline).toLocaleString()}</div>
       </div>
       <div className="task-buttons">
         <button className="complete-button">&#10004;</button>

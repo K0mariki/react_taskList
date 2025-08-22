@@ -176,21 +176,21 @@ h2 {
 }
 
 .task-item.high {
-  background-color: #f8d7da;
-  color: #741abe;
-  border-left: 6px solid #f5c6cb;
+  background-color: #d5a9fa;
+  color: #9226eb;
+  border-left: 6px solid #9226eb;
 }
 
 .task-item.medium {
-  background-color: #fff3cd;
-  color: #d5d811;
-  border-left: 6px solid #ffeeba;
+  background-color: #c5f8a7;
+  color: #6bc437;
+  border-left: 6px solid #6bc437;
 }
 
 .task-item.low {
-  background-color: #d4edda;
-  color: #155724;
-  border-left: 6px solid #c3e6cb;
+  background-color: #c1e9fc;
+  color: #266beb;
+  border-left: 6px solid #266beb;
 }
 
 .task-item:hover {
