@@ -119,14 +119,19 @@ h2 {
   animation: fade-in 0.5s ease-in-out;
 }
 
+.task-form label {
+  width: 80%;
+}
+
 .task-form input[type="text"],
 .task-form select,
 .task-form input[type="datetime-local"] {
   margin: 0 0 16px 0;
   padding: 12px;
   border-radius: 8px;
+  width: 100%;
   border: 1px solid #ced4da;
-  width: 80%;
+
   font-size: 1em;
   transition: border 0.3s;
 }

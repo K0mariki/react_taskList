@@ -6,6 +6,11 @@ function App() {
     openTaskList: true,
     openCompletedTaskList: true,
   });
+  const [tasks, setTasks] = useState();
+  const [sortType, setSortType] = useState("date"); // значения для сортировки сортировки по дате (значение "date") или приоритету (значение "priority")
+  const [sortOrder, setSortOrder] = useState("asc"); // значения для сортировки по возростанию (значение "asc") или убыванию (значение "desc")
+  const activeTasks = sortTask(tasks.filter((task) => !task.completed));
+  const completedTask = sortTask(tasks.filter((task) => task.completed));
 
   function openedSection(section) {
     setOpenSection((prev) => ({
@@ -13,7 +18,6 @@ function App() {
       [section]: !prev[section],
     }));
   }
-  const [tasks, setTasks] = useState([]);
 
   function addTask(task) {
     setTasks([
@@ -34,8 +38,29 @@ function App() {
     );
   }
 
-  const activeTasks = tasks.filter((task) => !task.completed);
-  const completedTask = tasks.filter((task) => task.completed);
+  function sortTask(filteredTasks) {
+    return filteredTasks.slice().sort((a, b) => {
+      if (sortType === "priority") {
+        const priorityOrder = { high: 1, medium: 2, low: 3 };
+        return sortOrder === "asc"
+          ? priorityOrder[a.priority] - priorityOrder[b.priority]
+          : priorityOrder[b.priority] - priorityOrder[a.priority];
+      } else {
+        return sortOrder === "asc"
+          ? new Date(a.deadline) - new Date(b.deadline)
+          : new Date(b.deadline) - new Date(a.deadline);
+      }
+    });
+  }
+
+  function toggleSortOrder(type) {
+    if (sortType === type) {
+      setSortOrder(sortOrder == "asc" ? "desc" : "asc");
+    } else {
+      setSortType(type);
+      setSortOrder("asc");
+    }
+  }
 
   return (
     <div className="app">
@@ -67,8 +92,18 @@ function App() {
           {openSection.openTaskList && (
             <>
               <div className="sort-controls">
-                <button className="sort-button">По дате</button>
-                <button className="sort-button">По приоритету</button>
+                <button
+                  className={`sort-button ${sortType === "date" ? "active" : ""}`}
+                  onClick={() => toggleSortOrder("date")}
+                >
+                  По дате {sortType === "date" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
+                </button>
+                <button
+                  className={`sort-button ${sortType === "priority" ? "active" : ""}`}
+                  onClick={() => toggleSortOrder("priority")}
+                >
+                  По приоритету {sortType === "priority" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
+                </button>
               </div>
               <TaskList
                 tasks={tasks}
@@ -121,33 +156,45 @@ function TaskForm({ addTask }) {
 
   return (
     <form className="task-form" action="" onSubmit={handleSubmit}>
+      <label>
+        Название задачи
       <input
         type="text"
         value={formElement.title}
-        placeholder="Название задачи"
+        placeholder="Почитать книжку"
         required
         onChange={(e) =>
           setFormElement({ ...formElement, title: e.target.value })
         }
       />
-      <select
-        value={formElement.priority}
-        onChange={(e) =>
-          setFormElement({ ...formElement, priority: e.target.value })
-        }
-      >
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-      <input
-        type="datetime-local"
-        required
-        value={formElement.deadline}
-        onChange={(e) =>
-          setFormElement({ ...formElement, deadline: e.target.value })
-        }
-      />
+      </label>
+      <label>
+        Приоритет
+        <select
+          value={formElement.priority}
+          onChange={(e) =>
+            setFormElement({ ...formElement, priority: e.target.value })
+          }
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+
+      <label>
+        {" "}
+        Дедлайн{" "}
+        <input
+          type="datetime-local"
+          required
+          value={formElement.deadline}
+          onChange={(e) =>
+            setFormElement({ ...formElement, deadline: e.target.value })
+          }
+        />
+      </label>
+
       <button type="submit">Добавить задачу</button>
     </form>
   );
@@ -191,15 +238,15 @@ function TaskItem({ task, deleteTask, completeTask }) {
       <div className="task-info">
         <h3>
           {title}
-          <strong> {priority}</strong>
+          <sup>{priority}</sup>
         </h3>
         <div className="task-deadline">
           Дедлайн: {new Date(deadline).toLocaleString()}
         </div>
       </div>
       <div className="task-buttons">
-        <button className="complete-button" onClick={() => completeTask(id)}>
-          {task.completed ? "↺" : "✔"}
+        <button className="complete-button" onClick={() => completeTask(id)} title={!task.completed ? "Отметить как выполненная задача" : "Вернуть в список активных задач"}>
+          {task.completed ? "\u21BA" : "\u2714"}
         </button>
         <button className="delete-button" onClick={() => deleteTask(id)}>
           &#10006;
