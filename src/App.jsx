@@ -6,7 +6,15 @@ function App() {
     openTaskList: true,
     openCompletedTaskList: true,
   });
-  const [tasks, setTasks] = useState();
+  const [tasks, setTasks] = useState([
+    {
+      id: crypto.randomUUID(),
+      title: "Улыбнуться",
+      priority: "low",
+      deadline: Date.now(),
+      completed: false,
+    },
+  ]);
   const [sortType, setSortType] = useState("date"); // значения для сортировки сортировки по дате (значение "date") или приоритету (значение "priority")
   const [sortOrder, setSortOrder] = useState("asc"); // значения для сортировки по возростанию (значение "asc") или убыванию (значение "desc")
   const activeTasks = sortTask(tasks.filter((task) => !task.completed));
@@ -93,16 +101,24 @@ function App() {
             <>
               <div className="sort-controls">
                 <button
-                  className={`sort-button ${sortType === "date" ? "active" : ""}`}
+                  className={`sort-button ${
+                    sortType === "date" ? "active" : ""
+                  }`}
                   onClick={() => toggleSortOrder("date")}
                 >
-                  По дате {sortType === "date" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
+                  По дате{" "}
+                  {sortType === "date" &&
+                    (sortOrder === "asc" ? "\u2191" : "\u2193")}
                 </button>
                 <button
-                  className={`sort-button ${sortType === "priority" ? "active" : ""}`}
+                  className={`sort-button ${
+                    sortType === "priority" ? "active" : ""
+                  }`}
                   onClick={() => toggleSortOrder("priority")}
                 >
-                  По приоритету {sortType === "priority" && (sortOrder === "asc" ? "\u2191" : "\u2193")}
+                  По приоритету{" "}
+                  {sortType === "priority" &&
+                    (sortOrder === "asc" ? "\u2191" : "\u2193")}
                 </button>
               </div>
               <TaskList
@@ -158,15 +174,15 @@ function TaskForm({ addTask }) {
     <form className="task-form" action="" onSubmit={handleSubmit}>
       <label>
         Название задачи
-      <input
-        type="text"
-        value={formElement.title}
-        placeholder="Почитать книжку"
-        required
-        onChange={(e) =>
-          setFormElement({ ...formElement, title: e.target.value })
-        }
-      />
+        <input
+          type="text"
+          value={formElement.title}
+          placeholder="Почитать книжку"
+          required
+          onChange={(e) =>
+            setFormElement({ ...formElement, title: e.target.value })
+          }
+        />
       </label>
       <label>
         Приоритет
@@ -245,7 +261,15 @@ function TaskItem({ task, deleteTask, completeTask }) {
         </div>
       </div>
       <div className="task-buttons">
-        <button className="complete-button" onClick={() => completeTask(id)} title={!task.completed ? "Отметить как выполненная задача" : "Вернуть в список активных задач"}>
+        <button
+          className="complete-button"
+          onClick={() => completeTask(id)}
+          title={
+            !task.completed
+              ? "Отметить как выполненная задача"
+              : "Вернуть в список активных задач"
+          }
+        >
           {task.completed ? "\u21BA" : "\u2714"}
         </button>
         <button className="delete-button" onClick={() => deleteTask(id)}>
