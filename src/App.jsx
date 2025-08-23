@@ -6,15 +6,7 @@ function App() {
     openTaskList: true,
     openCompletedTaskList: true,
   });
-  const [tasks, setTasks] = useState([
-    {
-      id: crypto.randomUUID(),
-      title: "Улыбнуться",
-      priority: "low",
-      deadline: Date.now(),
-      completed: false,
-    },
-  ]);
+  const [tasks, setTasks] = useState();
   const [sortType, setSortType] = useState("date"); // значения для сортировки сортировки по дате (значение "date") или приоритету (значение "priority")
   const [sortOrder, setSortOrder] = useState("asc"); // значения для сортировки по возростанию (значение "asc") или убыванию (значение "desc")
   const activeTasks = sortTask(tasks.filter((task) => !task.completed));
